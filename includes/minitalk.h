@@ -6,13 +6,16 @@
 /*   By: acoto-gu <acoto-gu@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 15:08:02 by acoto-gu          #+#    #+#             */
-/*   Updated: 2023/11/27 13:24:20 by acoto-gu         ###   ########.fr       */
+/*   Updated: 2023/11/28 14:22:19 by acoto-gu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <signal.h>
-#include "../libs/libft/libft.h"
-#include "../libs/libftprintf/ft_printf.h"
+#ifndef MINITALK_H
+# define MINITALK_H
+
+# include <signal.h>
+# include "../libs/libft/libft.h"
+# include "../libs/libftprintf/ft_printf.h"
 
 struct s_cnx_state
 {
@@ -36,11 +39,13 @@ struct s_rx_state
 
 typedef struct s_rx_state	t_rx_state;
 
-#define MSG_ACK_TIMEOUT_SECONDS 25
-#define BIT_ACK_TIMEOUT_USECONDS 100
+# define MSG_ACK_TIMEOUT_SECONDS 25
+# define BIT_ACK_TIMEOUT_USECONDS 100
 
 t_cnx_state	*get_cnx_state(void);
 int			check_server_bit_ack(void);
 int			check_server_msg_ack(void);
 void		rx_handler(int signum);
 void		ack_msg_handler(int signum);
+
+#endif
