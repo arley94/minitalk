@@ -102,12 +102,3 @@ fclean: clean
 re: fclean all
 
 .PHONY:		all bonus clean fclean re
-
-tserver: 
-
-tserver: $(OBJ_S)
-	@make -C libs/libft
-	@make -C libs/libftprintf
-	@echo "$(PINK)Compiling the Server.$(CLEAR)"
-	$(CC) $(FLAGS) $(OBJ_S) $(INCLUDE) $(LIBFT) $(LIBFTPRINTF) -o $(NAME_S) 
-	@echo "$(GREEN)[OK]\n$(CLEAR)$(GREEN)Success!$(CLEAR)\n"
