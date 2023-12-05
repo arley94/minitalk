@@ -13,8 +13,8 @@ LIBFTPRINTF = $(addprefix $(LIBS_DIR), $(FTPRINTF_DIR))
 
 # SOURCE FILES
 SRC_DIR = src/
-SRC_S_FILES = server.c
-SRC_C_FILES = client.c client_utils.c
+SRC_S_FILES = server.c utils.c
+SRC_C_FILES = client.c utils.c
 SRC_S_FILES_BONUS = server_bonus.c
 SRC_C_FILES_BONUS = client_bonus.c client_utils.c
 SRC_S = $(addprefix $(SRC_DIR), $(SRC_S_FILES))
@@ -30,7 +30,7 @@ OBJ_C_BONUS = ${SRC_C_BONUS:.c=.o}
 
 # COMPILER OPTIONS
 CC		= gcc
-FLAGS	= -Wall -Werror -Wextra -g3
+FLAGS	= -Wall -Werror -Wextra
 INCLUDE = -I include
 RM		= rm -f
 
