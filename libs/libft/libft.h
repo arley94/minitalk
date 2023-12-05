@@ -6,7 +6,7 @@
 /*   By: acoto-gu <acoto-gu@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 19:40:15 by acoto-gu          #+#    #+#             */
-/*   Updated: 2023/09/25 21:46:04 by acoto-gu         ###   ########.fr       */
+/*   Updated: 2023/11/29 17:09:31 by acoto-gu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ int		ft_isdigit(int c);
 int		ft_isalnum(int c);
 int		ft_isascii(int c);
 int		ft_isprint(int c);
+int		ft_str_is_numeric(const char *str);
 
 /* ************************************************************************** */
 /*                                 MEMORY                                     */
