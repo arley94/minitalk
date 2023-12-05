@@ -1,96 +1,65 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client_bonus.c                                     :+:      :+:    :+:   */
+/*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acoto-gu <acoto-gu@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: acoto-gu <acoto-gu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 10:19:07 by acoto-gu          #+#    #+#             */
-/*   Updated: 2023/11/27 13:45:19 by acoto-gu         ###   ########.fr       */
+/*   Updated: 2023/12/05 16:33:52 by acoto-gu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minitalk.h"
 
-static int	send_byte(unsigned char c)
+void	set_sigaction(struct sigaction *act,
+	void (*handler)(int))
 {
-	unsigned char	mask;
-	int				shift;
-	t_cnx_state		*cnx;
-	int				server_ack;
-
-	cnx = get_cnx_state();
-	shift = 7;
-	while (shift >= 0)
-	{
-		mask = (0b01 << shift);
-		server_ack = check_server_bit_ack();
-		if (server_ack < 0)
-			return (server_ack);
-		cnx->line_busy = 1;
-		if (mask & c)
-			kill(cnx->server_pid, SIGUSR2);
-		else
-			kill(cnx->server_pid, SIGUSR1);
-		shift--;
-	}
-	return (server_ack);
+	sigemptyset(&(act->sa_mask));
+	act->sa_handler = handler;
+	sigaction(SIGUSR1, act, NULL);
+	sigaction(SIGUSR2, act, NULL);
 }
 
-static int	send_len(unsigned int len)
+void	handler(int signum)
 {
-	int	i;
-	int	server_ack;
+	t_tx_state	*tx;
+	int			end;
 
-	i = 3;
-	while (i >= 0)
+	end = 0;
+	tx = get_tx_state();
+	if (signum == SIGUSR1)
+		end = send_bits(tx);
+	else if (signum == SIGUSR2)
 	{
-		server_ack = send_byte(len >> 8 * i);
-		if (server_ack < 0)
-			return (server_ack);
-		i--;
+		ft_printf("client: server ended unexpectdly.\n");
+		exit(EXIT_FAILURE);
 	}
-	return (server_ack);
-}
-
-static int	send_msg(char *msg)
-{
-	int	i;
-	int	server_ack;
-
-	i = 0;
-	while (msg[i])
+	if (end)
 	{
-		server_ack = send_byte(msg[i]);
-		if (server_ack < 0)
-			return (server_ack);
-		i++;
+		ft_printf("client: message received by server\n");
+		exit(EXIT_SUCCESS);
 	}
-	return (0);
 }
 
 int	main(int argc, char **argv)
 {
-	t_cnx_state			*cnx;
+	t_tx_state			*tx;
 	struct sigaction	act;
 
-	if (argc != 3)
+	if (argc != 3 || !ft_str_is_numeric(argv[1]))
 		return (ft_printf("Usage: ./client <PID> <MESSAGE>\n"), EXIT_FAILURE);
-	cnx = get_cnx_state();
-	cnx->server_pid = ft_atoi(argv[1]);
-	if (cnx->server_pid <= 0)
+	tx = get_tx_state();
+	tx->server_pid = ft_atoi(argv[1]);
+	if (tx->server_pid <= 0)
 		return (ft_printf("[%s] is not a valid PID\n", argv[1]), EXIT_FAILURE);
-	sigemptyset(&act.sa_mask);
-	act.sa_handler = rx_handler;
-	sigaction(SIGUSR1, &act, NULL);
-	act.sa_handler = ack_msg_handler;
-	sigaction(SIGUSR2, &act, NULL);
-	if (send_len(ft_strlen(argv[2])) < 0)
-		return (ft_printf("Server is not responding\n"), EXIT_FAILURE);
-	if (send_msg(argv[2]) < 0)
-		return (ft_printf("Server is not responding\n"), EXIT_FAILURE);
-	if (check_server_msg_ack() < 0)
-		return (ft_printf("Server timeout sending ack_msg\n"), EXIT_FAILURE);
-	ft_printf("Message received by server\n");
+	tx->msg = argv[2];
+	tx->msg_len = ft_strlen(argv[2]);
+	set_sigaction(&act, handler);
+	send_bits(tx);
+	while (1)
+	{
+		pause();
+	}
 	return (EXIT_SUCCESS);
 }
