@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acoto-gu <acoto-gu@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: acoto-gu <acoto-gu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 10:19:07 by acoto-gu          #+#    #+#             */
-/*   Updated: 2023/12/05 11:00:10 by acoto-gu         ###   ########.fr       */
+/*   Updated: 2023/12/05 16:33:52 by acoto-gu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ void	handler(int signum)
 	t_tx_state	*tx;
 	int			end;
 
+	end = 0;
 	tx = get_tx_state();
 	if (signum == SIGUSR1)
 		end = send_bits(tx);
