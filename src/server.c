@@ -6,7 +6,7 @@
 /*   By: acoto-gu <acoto-gu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 10:00:03 by acoto-gu          #+#    #+#             */
-/*   Updated: 2023/12/06 11:51:15 by acoto-gu         ###   ########.fr       */
+/*   Updated: 2023/12/06 13:35:20 by acoto-gu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,9 @@ static void	handler(int signum, siginfo_t *siginfo, void *ucontext)
 
 	(void) ucontext;
 	rx = get_rx_state();
-	if (!rx->pid_client)
+	if (!rx->pid_client && siginfo->si_pid)
 		rx->pid_client = siginfo->si_pid;
-	if (rx->pid_client != siginfo->si_pid)
+	if (siginfo->si_pid && rx->pid_client != siginfo->si_pid)
 	{
 		kill(siginfo->si_pid, SIGUSR2);
 		return ;
@@ -85,17 +85,13 @@ int	main(void)
 	sigemptyset(&block_mask);
 	sigaddset(&block_mask, SIGINT);
 	sigaddset(&block_mask, SIGQUIT);
-	act.sa_flags = SA_SIGINFO;
-	//act.sa_flags = SA_RESTART | SA_SIGINFO;
+	act.sa_flags = SA_RESTART | SA_SIGINFO;
 	act.sa_mask = block_mask;
-	//sigemptyset(&(act.sa_mask));
 	act.sa_sigaction = handler;
 	sigaction(SIGUSR1, &act, NULL);
 	sigaction(SIGUSR2, &act, NULL);
 	ft_printf("Server PID: %d\n", getpid());
 	while (1)
-	{
 		pause();
-	}
 	return (EXIT_SUCCESS);
 }
